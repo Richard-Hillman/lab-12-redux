@@ -21,7 +21,8 @@ async function run() {
         [user.email, user.hash]);
       })
     );
-      
+   
+    
     const user = users[0].rows[0];
 
     await Promise.all(
@@ -34,6 +35,7 @@ async function run() {
       })
     );
     
+    // -------------------------------------------------------------------------------------
 
     console.log('seed data load complete', getEmoji(), getEmoji(), getEmoji());
   }
