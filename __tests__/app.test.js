@@ -6,6 +6,8 @@ const fakeRequest = require('supertest');
 const app = require('../lib/app');
 const client = require('../lib/client');
 
+// ------------------------------------------------------
+
 describe('app routes', () => {
   describe('routes', () => {
     let token;
@@ -27,39 +29,98 @@ describe('app routes', () => {
       return done();
     });
   
+    // --------------------------------------------------------
+
     afterAll(done => {
       return client.end(done);
     });
+
+    // ----------------------------------------------------------
 
     test('returns todos', async() => {
 
       const expectation = [
         {
-          id: 1,
-          todo: 'todos los mujer es muy perezoso',
-          completed: false,
+          'id': 4,
+          'todo': 'todos los mujer es muy perezoso',
+          'completed': false,
+          'owner_id': 2
         },
         {
-          id: 2,
-          todo: 'todo el mundo es loco',
-          completed: false,
+          'id': 5,
+          'todo': 'todo el mundo es loco',
+          'completed': false,
+          'owner_id': 2
         },
         {
-          id: 3,
-          todo: 'todos como se donde',
-          completed: false, 
+          'id': 6,
+          'todo': 'todos como se donde',
+          'completed': false, 
+          'owner_id': 2
         }
       ];
       
 
+      await fakeRequest(app)
+        .post('/api/todos')
+        .send(expectation[0])
+        .set('Authorization', token)
+        .expect('Content-Type', /json/)
+        .expect(200);
+
+      await fakeRequest(app)
+        .post('/api/todos')
+        .send(expectation[1])
+        .set('Authorization', token)
+        .expect('Content-Type', /json/)
+        .expect(200);
+
+      await fakeRequest(app)
+        .post('/api/todos')
+        .send(expectation[2])
+        .set('Authorization', token)
+        .expect('Content-Type', /json/)
+        .expect(200);
+
       const data = await fakeRequest(app)
-        .get('/todos')
+        .get('/api/todos')
+        .set('Authorization', token)
+        .expect('Content-Type', /json/)
+        .expect(200);
+
+      expect(data.body).toEqual(expectation);
+
+    });
+
+    // --------------------------------------------------------------------------
+    
+    test('adds the one', async() => {
+    
+      const expectation = 
+      [
+        {
+          'id': 7,
+          'todo': 'todo el gato es muy bonita',
+          'completed': false,
+          'owner_id': 2
+        }
+      ];
+
+      const data = await fakeRequest(app)
+        .post('/api/todos')
+        .send({
+          'todo': 'todo el gato es muy bonita',
+          'completed': false,
+        })
+
+        .set('Authorization', token)
         .expect('Content-Type', /json/)
         .expect(200);
 
       expect(data.body).toEqual(expectation);
     });
 
-    
+    // ---------------------------------------------------------------------------
+
   });
 });
